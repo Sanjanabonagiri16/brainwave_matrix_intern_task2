@@ -32,12 +32,18 @@ export async function GET(request: NextRequest) {
     // Build where clause
     const where = {
       ...(category && { category }),
-      ...(tag && { tags: { has: tag } }),
+      ...(tag && { 
+        tags: {
+          some: {
+            name: tag
+          }
+        }
+      }),
       ...(authorId && { authorId }),
       ...(search && {
         OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { content: { contains: search, mode: 'insensitive' } },
+          { title: { contains: search } },
+          { content: { contains: search } },
         ],
       }),
       ...(published && { status: 'published' }),
@@ -61,6 +67,7 @@ export async function GET(request: NextRequest) {
             avatar: true,
           },
         },
+        tags: true,
         _count: {
           select: {
             likes: true,
@@ -73,6 +80,7 @@ export async function GET(request: NextRequest) {
     // Format response
     const formattedPosts = posts.map((post: any) => ({
       ...post,
+      tags: post.tags.map((tag: { name: string }) => tag.name),
       likes: post._count.likes,
       comments: post._count.comments,
     }))
@@ -111,14 +119,33 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData = createPostSchema.parse(body)
 
+    // Create or connect tags
+    const tagData = validatedData.tags ? await Promise.all(
+      validatedData.tags.map(async (tagName) => {
+        const tag = await prisma.tag.upsert({
+          where: { name: tagName },
+          update: {},
+          create: { name: tagName },
+        })
+        return { id: tag.id }
+      })
+    ) : []
+
     // Create post
     const post = await prisma.post.create({
       data: {
-        ...validatedData,
+        title: validatedData.title,
+        content: validatedData.content,
+        excerpt: validatedData.excerpt,
+        category: validatedData.category,
+        status: validatedData.status,
+        publishedAt: validatedData.status === 'published' ? new Date() : null,
         author: {
           connect: { id: session.user.id },
         },
-        publishedAt: validatedData.status === 'published' ? new Date() : null,
+        tags: {
+          connect: tagData,
+        },
       },
       include: {
         author: {
@@ -129,6 +156,7 @@ export async function POST(request: NextRequest) {
             avatar: true,
           },
         },
+        tags: true,
         _count: {
           select: {
             likes: true,
@@ -141,6 +169,7 @@ export async function POST(request: NextRequest) {
     // Format response
     const formattedPost = {
       ...post,
+      tags: post.tags.map(tag => tag.name),
       likes: post._count.likes,
       comments: post._count.comments,
     }

@@ -5,22 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import SearchFilters from '@/components/SearchFilters'
 import { motion, AnimatePresence } from 'framer-motion'
-
-interface Post {
-  id: string
-  title: string
-  content: string
-  author: {
-    name: string
-    avatar: string
-  }
-  category: string
-  publishedAt: string
-  readTime: string
-  likes: number
-  comments: number
-  excerpt: string
-}
+import { mockPosts } from './mockData'
+import { Post } from '@/types'
 
 interface PaginationInfo {
   currentPage: number
@@ -29,91 +15,110 @@ interface PaginationInfo {
   hasMore: boolean
 }
 
+const POSTS_PER_PAGE = 6
+
 export default function BlogPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [posts, setPosts] = useState<Post[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [pagination, setPagination] = useState<PaginationInfo>({
     currentPage: 1,
-    totalPages: 1,
-    totalPosts: 0,
-    hasMore: false
+    totalPages: Math.ceil(mockPosts.length / POSTS_PER_PAGE),
+    totalPosts: mockPosts.length,
+    hasMore: mockPosts.length > POSTS_PER_PAGE
   })
   const [isLoadingMore, setIsLoadingMore] = useState(false)
 
   const fetchPosts = async (page: number) => {
     try {
-      // Construct the query string from search params
-      const queryParams = new URLSearchParams(searchParams.toString())
-      queryParams.set('page', page.toString())
-      queryParams.set('limit', '6') // Show 6 posts per page
+      setError(null)
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 500))
 
-      const response = await fetch(`/api/posts?${queryParams.toString()}`)
-      if (!response.ok) throw new Error('Failed to fetch posts')
+      const category = searchParams.get('category')
+      const search = searchParams.get('search')?.toLowerCase()
+      const tag = searchParams.get('tag')?.toLowerCase()
       
-      const data = await response.json()
-      
+      let filteredPosts = [...mockPosts]
+
+      // Apply filters
+      if (category) {
+        filteredPosts = filteredPosts.filter(post => 
+          post.category.toLowerCase() === category.toLowerCase()
+        )
+      }
+      if (search) {
+        filteredPosts = filteredPosts.filter(post => 
+          post.title.toLowerCase().includes(search) ||
+          post.excerpt.toLowerCase().includes(search) ||
+          post.content.toLowerCase().includes(search) ||
+          post.author.name.toLowerCase().includes(search)
+        )
+      }
+      if (tag) {
+        filteredPosts = filteredPosts.filter(post => 
+          post.tags.some(t => t.toLowerCase().includes(tag))
+        )
+      }
+
+      // Sort posts by date
+      filteredPosts.sort((a, b) => 
+        new Date(b.publishedAt || b.createdAt).getTime() - 
+        new Date(a.publishedAt || a.createdAt).getTime()
+      )
+
+      // Calculate pagination
+      const start = (page - 1) * POSTS_PER_PAGE
+      const end = start + POSTS_PER_PAGE
+      const paginatedPosts = filteredPosts.slice(start, end)
+
       if (page === 1) {
-        setPosts(data.posts)
+        setPosts(paginatedPosts)
       } else {
-        setPosts(prev => [...prev, ...data.posts])
+        setPosts(prev => [...prev, ...paginatedPosts])
       }
       
-      setPagination(data.pagination)
+      setPagination({
+        currentPage: page,
+        totalPages: Math.ceil(filteredPosts.length / POSTS_PER_PAGE),
+        totalPosts: filteredPosts.length,
+        hasMore: filteredPosts.length > end
+      })
     } catch (error) {
       console.error('Error fetching posts:', error)
+      setError('Something went wrong. Please try again.')
     }
   }
 
-  // Set up SSE connection
+  // Simulate real-time updates
   useEffect(() => {
-    const eventSource = new EventSource('/api/posts/sse')
-
-    eventSource.onmessage = (event) => {
-      const data = JSON.parse(event.data)
-
-      switch (data.type) {
-        case 'initial':
-          setPosts(data.posts)
-          setIsLoading(false)
-          break
-
-        case 'new':
-          setPosts(prevPosts => [data.post, ...prevPosts])
-          setPagination(prev => ({
-            ...prev,
-            totalPosts: prev.totalPosts + 1,
-            totalPages: Math.ceil((prev.totalPosts + 1) / 10),
-            hasMore: true
-          }))
-          break
-
-        case 'delete':
-          setPosts(prevPosts => prevPosts.filter(post => !data.ids.includes(post.id)))
-          setPagination(prev => {
-            const newTotal = prev.totalPosts - data.ids.length
+    const interval = setInterval(() => {
+      setPosts(currentPosts => 
+        currentPosts.map(post => {
+          if (Math.random() < 0.3) { // 30% chance to update each post
+            const likesIncrease = Math.floor(Math.random() * 3)
+            const commentsIncrease = Math.floor(Math.random() * 2)
+            
             return {
-              ...prev,
-              totalPosts: newTotal,
-              totalPages: Math.ceil(newTotal / 10),
-              hasMore: newTotal > prev.currentPage * 10
+              ...post,
+              likes: post.likes + likesIncrease,
+              comments: post.comments + commentsIncrease,
+              ...(likesIncrease > 0 && {
+                updatedAt: new Date().toISOString()
+              })
             }
-          })
-          break
-      }
-    }
+          }
+          return post
+        })
+      )
+    }, 3000) // Update every 3 seconds
 
-    eventSource.onerror = (error) => {
-      console.error('SSE error:', error)
-      eventSource.close()
-    }
-
-    return () => {
-      eventSource.close()
-    }
+    return () => clearInterval(interval)
   }, [])
 
+  // Initial fetch
   useEffect(() => {
     setIsLoading(true)
     fetchPosts(1).finally(() => setIsLoading(false))
@@ -159,6 +164,13 @@ export default function BlogPage() {
           <SearchFilters />
         </div>
 
+        {/* Error Message */}
+        {error && (
+          <div className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-lg text-red-500">
+            <p>{error}</p>
+          </div>
+        )}
+
         {/* Posts Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence mode="popLayout">
@@ -166,7 +178,7 @@ export default function BlogPage() {
               // Loading skeletons
               Array.from({ length: 6 }).map((_, index) => (
                 <motion.div
-                  key={index}
+                  key={`skeleton-${index}`}
                   layout
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -186,7 +198,7 @@ export default function BlogPage() {
                   </div>
                 </motion.div>
               ))
-            ) : (
+            ) : posts && posts.length > 0 ? (
               posts.map((post) => (
                 <motion.div
                   key={post.id}
@@ -207,28 +219,50 @@ export default function BlogPage() {
                     </div>
                     <div>
                       <p className="text-sm font-medium">{post.author.name}</p>
-                      <p className="text-xs text-gray-400">{formatDate(post.publishedAt)}</p>
+                      <p className="text-xs text-gray-400">{formatDate(post.publishedAt || post.createdAt)}</p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-4 text-sm text-gray-400">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-400">
                     <span className="px-2 py-1 bg-gray-700 rounded-full text-xs">
                       {post.category}
                     </span>
+                    {post.tags.slice(0, 2).map(tag => (
+                      <span key={tag} className="px-2 py-1 bg-gray-700/50 rounded-full text-xs">
+                        {tag}
+                      </span>
+                    ))}
+                    <span className="mx-2">•</span>
+                    <motion.span
+                      key={`likes-${post.likes}`}
+                      initial={{ scale: 1 }}
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {post.likes} likes
+                    </motion.span>
                     <span>•</span>
-                    <span>{post.readTime}</span>
-                    <span>•</span>
-                    <span>{post.likes} likes</span>
-                    <span>•</span>
-                    <span>{post.comments} comments</span>
+                    <motion.span
+                      key={`comments-${post.comments}`}
+                      initial={{ scale: 1 }}
+                      animate={{ scale: [1, 1.2, 1] }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {post.comments} comments
+                    </motion.span>
                   </div>
                 </motion.div>
               ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <h3 className="text-xl font-semibold mb-2">No posts found</h3>
+                <p className="text-gray-400">Try adjusting your search or filters</p>
+              </div>
             )}
           </AnimatePresence>
         </div>
 
         {/* Load More Button */}
-        {!isLoading && pagination.hasMore && (
+        {!isLoading && !error && posts && posts.length > 0 && pagination.hasMore && (
           <div className="mt-12 text-center">
             <button
               onClick={handleLoadMore}
@@ -237,14 +271,6 @@ export default function BlogPage() {
             >
               {isLoadingMore ? 'Loading...' : 'View More Posts'}
             </button>
-          </div>
-        )}
-
-        {/* No Posts Message */}
-        {!isLoading && posts.length === 0 && (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold mb-2">No posts found</h3>
-            <p className="text-gray-400">Try adjusting your search or filters</p>
           </div>
         )}
       </div>

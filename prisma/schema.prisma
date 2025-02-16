@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 model User {
@@ -37,7 +37,6 @@ model Post {
   content     String
   excerpt     String?
   category    String
-  tags        String[]
   status      Status    @default(DRAFT)
   publishedAt DateTime?
   createdAt   DateTime  @default(now())
@@ -48,6 +47,14 @@ model Post {
   authorId String
   comments Comment[]
   likes    Like[]
+  tags     Tag[]     @relation("PostTags")
+}
+
+model Tag {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  posts     Post[]   @relation("PostTags")
+  createdAt DateTime @default(now())
 }
 
 model Comment {

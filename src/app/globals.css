@@ -12,27 +12,31 @@
 
   /* Typography */
   h1, h2, h3, h4, h5, h6 {
-    @apply font-heading text-gray-800 dark:text-gray-100;
+    @apply font-heading text-blue-600 dark:text-white mb-6 !important;
   }
 
   h1 {
-    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide;
+    @apply text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight;
+    @apply mb-8 text-blue-700 dark:text-white !important;
   }
 
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide;
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight leading-tight;
+    @apply mb-6 text-blue-600 dark:text-white border-b-2 border-blue-500/20 pb-2 !important;
   }
 
   h3 {
-    @apply text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide;
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-tight;
+    @apply mb-4 text-blue-600 dark:text-white !important;
   }
 
   h4 {
-    @apply text-xl md:text-2xl lg:text-3xl font-bold tracking-wide;
+    @apply text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight leading-tight;
+    @apply mb-4 text-blue-600 dark:text-white !important;
   }
 
   p {
-    @apply text-base md:text-lg leading-relaxed text-gray-800 dark:text-gray-300;
+    @apply text-base md:text-lg leading-relaxed text-gray-700 dark:text-gray-300 mb-4;
   }
 
   code {
@@ -142,4 +146,98 @@
 
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-gray-400 dark:bg-gray-600;
+}
+
+/* SimpleMDE Editor Overrides */
+.EasyMDEContainer {
+  @apply bg-gray-800 border border-gray-700 rounded-lg overflow-hidden;
+}
+
+.EasyMDEContainer .CodeMirror {
+  @apply bg-gray-800 text-gray-100 border-none;
+  height: 400px;
+}
+
+.EasyMDEContainer .CodeMirror-cursor {
+  @apply border-gray-300;
+}
+
+.EasyMDEContainer .CodeMirror-selected {
+  @apply bg-blue-500/20;
+}
+
+.EasyMDEContainer .CodeMirror-line {
+  @apply text-gray-100;
+}
+
+.EasyMDEContainer .editor-toolbar {
+  @apply bg-gray-900 border-b border-gray-700;
+}
+
+.EasyMDEContainer .editor-toolbar button {
+  @apply text-gray-400 hover:text-white hover:bg-gray-800 border-none;
+}
+
+.EasyMDEContainer .editor-toolbar button.active {
+  @apply text-white bg-gray-800;
+}
+
+.EasyMDEContainer .editor-toolbar i.separator {
+  @apply border-gray-700;
+}
+
+.EasyMDEContainer .editor-preview {
+  @apply bg-gray-800 text-gray-100;
+}
+
+.EasyMDEContainer .editor-statusbar {
+  @apply text-gray-400 bg-gray-900 border-t border-gray-700;
+}
+
+/* Image Upload Dialog */
+.image-upload-dialog {
+  @apply fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50;
+}
+
+.image-upload-dialog .dialog-content {
+  @apply bg-gray-800 rounded-lg p-6 max-w-md w-full;
+}
+
+.image-upload-dialog .dialog-header {
+  @apply text-lg font-semibold mb-4 text-white;
+}
+
+.image-upload-dialog .upload-area {
+  @apply border-2 border-dashed border-gray-600 rounded-lg p-8 text-center cursor-pointer hover:border-blue-500 transition-colors;
+}
+
+.image-upload-dialog .upload-area.dragging {
+  @apply border-blue-500 bg-blue-500/10;
+}
+
+.image-upload-dialog .upload-icon {
+  @apply w-12 h-12 mx-auto mb-4 text-gray-400;
+}
+
+.image-upload-dialog .upload-text {
+  @apply text-gray-400;
+}
+
+.image-upload-dialog .upload-progress {
+  @apply mt-4 h-2 bg-gray-700 rounded-full overflow-hidden;
+}
+
+.image-upload-dialog .progress-bar {
+  @apply h-full bg-blue-500 transition-all duration-300;
+}
+
+/* Image Preview in Editor */
+.editor-preview img,
+.CodeMirror-preview img {
+  @apply max-w-full h-auto rounded-lg shadow-md my-4;
+}
+
+/* Image Upload Error */
+.upload-error {
+  @apply mt-4 p-3 bg-red-500/10 border border-red-500/20 rounded text-red-500 text-sm;
 } 
