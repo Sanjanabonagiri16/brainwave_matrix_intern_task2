@@ -1,0 +1,351 @@
+# Instructions
+
+During your interaction with the user, if you find anything reusable in this project (e.g. version of a library, model name), especially about a fix to a mistake you made or a correction you received, you should take note in the `Lessons` section in the `.cursorrules` file so you will not make the same mistake again. 
+
+You should also use the `.cursorrules` file as a Scratchpad to organize your thoughts. Especially when you receive a new task, you should first review the content of the Scratchpad, clear old different task if necessary, first explain the task, and plan the steps you need to take to complete the task. You can use todo markers to indicate the progress, e.g.
+[X] Task 1
+[ ] Task 2
+
+Also update the progress of the task in the Scratchpad when you finish a subtask.
+Especially when you finished a milestone, it will help to improve your depth of task accomplishment to use the Scratchpad to reflect and plan.
+The goal is to help you maintain a big picture as well as the progress of the task. Always refer to the Scratchpad when you plan the next step.
+
+# Tools
+
+Note all the tools are in python. So in the case you need to do batch processing, you can always consult the python files and write your own script.
+
+## Screenshot Verification
+
+The screenshot verification workflow allows you to capture screenshots of web pages and verify their appearance using LLMs. The following tools are available:
+
+1. Screenshot Capture:
+```bash
+venv/bin/python tools/screenshot_utils.py URL [--output OUTPUT] [--width WIDTH] [--height HEIGHT]
+```
+
+2. LLM Verification with Images:
+```bash
+venv/bin/python tools/llm_api.py --prompt "Your verification question" --provider {openai|anthropic} --image path/to/screenshot.png
+```
+
+Example workflow:
+```python
+from screenshot_utils import take_screenshot_sync
+from llm_api import query_llm
+
+# Take a screenshot
+
+screenshot_path = take_screenshot_sync('https://example.com', 'screenshot.png')
+
+# Verify with LLM
+
+response = query_llm(
+    "What is the background color and title of this webpage?",
+    provider="openai",  # or "anthropic"
+    image_path=screenshot_path
+)
+print(response)
+```
+
+## LLM
+
+You always have an LLM at your side to help you with the task. For simple tasks, you could invoke the LLM by running the following command:
+```
+venv/bin/python ./tools/llm_api.py --prompt "What is the capital of France?" --provider "anthropic"
+```
+
+The LLM API supports multiple providers:
+- OpenAI (default, model: gpt-4o)
+- Azure OpenAI (model: configured via AZURE_OPENAI_MODEL_DEPLOYMENT in .env file, defaults to gpt-4o-ms)
+- DeepSeek (model: deepseek-chat)
+- Anthropic (model: claude-3-sonnet-20240229)
+- Gemini (model: gemini-pro)
+- Local LLM (model: Qwen/Qwen2.5-32B-Instruct-AWQ)
+
+But usually it's a better idea to check the content of the file and use the APIs in the `tools/llm_api.py` file to invoke the LLM if needed.
+
+## Web browser
+
+You could use the `tools/web_scraper.py` file to scrape the web.
+```
+venv/bin/python ./tools/web_scraper.py --max-concurrent 3 URL1 URL2 URL3
+```
+This will output the content of the web pages.
+
+## Search engine
+
+You could use the `tools/search_engine.py` file to search the web.
+```
+venv/bin/python ./tools/search_engine.py "your search keywords"
+```
+This will output the search results in the following format:
+```
+URL: https://example.com
+Title: This is the title of the search result
+Snippet: This is a snippet of the search result
+```
+If needed, you can further use the `web_scraper.py` file to scrape the web page content.
+
+# Lessons
+
+## User Specified Lessons
+
+- You have a python venv in ./venv. Use it.
+- Include info useful for debugging in the program output.
+- Read the file before you try to edit it.
+- Due to Cursor's limit, when you use `git` and `gh` and need to submit a multiline commit message, first write the message in a file, and then use `git commit -F <filename>` or similar command to commit. And then remove the file. Include "[Cursor] " in the commit message and PR title.
+
+## Cursor learned
+
+- For search results, ensure proper handling of different character encodings (UTF-8) for international queries
+- Add debug information to stderr while keeping the main output clean in stdout for better pipeline integration
+- When using seaborn styles in matplotlib, use 'seaborn-v0_8' instead of 'seaborn' as the style name due to recent seaborn version changes
+- Use 'gpt-4o' as the model name for OpenAI's GPT-4 with vision capabilities
+- When implementing email functionality, use nodemailer version ^6.10.0 for compatibility with Next.js 14
+- Store sensitive email configuration in environment variables for security
+
+# Scratchpad
+
+Current Task: Implement Real-time Blog Creation and Deletion
+
+Steps:
+[X] Add SSE endpoint for blog updates
+  - Create endpoint at /api/posts/sse
+  - Set up client management system
+  - Handle client connections and disconnections
+  - Send real-time notifications for new/deleted posts
+
+[X] Update Posts API endpoints
+  - Modify POST endpoint to notify clients of new posts
+  - Modify DELETE endpoint to notify clients of deleted posts
+  - Add proper error handling and validation
+  - Ensure authorization checks
+
+[X] Update Blog List component
+  - Add SSE connection for real-time updates
+  - Handle new post notifications
+  - Handle deleted post notifications
+  - Add loading states
+  - Add error handling
+  - Add smooth animations for changes
+
+[X] Update Editor component
+  - Add real-time publishing status
+  - Show success/error notifications
+  - Add loading states
+  - Redirect to new post after publishing
+
+Features to implement:
+- Real-time post creation notifications
+- Real-time post deletion notifications
+- SSE connection management
+- Loading states and error handling
+- Smooth animations for changes
+- Authorization checks
+- Success/error notifications
+- Proper cleanup on unmount
+
+Features implemented:
+- Real-time comment updates using SSE
+- Nested replies support
+- Comment pagination
+- User authorization checks
+- Input validation
+- Error handling
+- Loading states
+- Animated transitions
+- Like functionality
+- Share functionality
+- Delete functionality
+- Responsive design
+- Dark theme support
+
+Core Features Status:
+
+1. Authentication & User Management
+[X] User registration
+[X] User login
+[X] Protected routes
+[X] Password reset
+[X] User profiles
+[X] Admin interface
+[X] User roles and permissions
+
+2. Content Management
+[X] Post creation
+[X] Rich text editor
+[X] Post editing
+[X] Post deletion
+[X] Categories
+[X] Tags
+[X] Content moderation
+[X] Comment management
+
+3. User Interface
+[X] Responsive design
+[X] Dark mode
+[X] Dashboard
+[X] Blog view
+[X] Explore page
+[X] Interactive animations
+[X] Admin interface
+[X] Comment interface
+
+4. Engagement Features
+[X] Like system
+[X] Comment system
+[X] Real-time updates
+[X] View counting
+[X] Share functionality
+[X] Nested replies
+[X] Comment moderation
+
+5. Search & Discovery
+[X] Search functionality
+[X] Category filtering
+[X] Tag filtering
+[X] Featured posts
+[X] Recent posts
+[X] Comment filtering
+
+Priority Tasks:
+1. [DONE] Implement post editing and deletion
+2. [DONE] Add actual comment functionality
+3. [DONE] Set up password reset system
+4. [DONE] Create admin interface
+5. [DONE] Add user roles and permissions
+
+Technical Debt:
+1. [IN PROGRESS] Add proper error handling
+   - Added for comments API
+   - Added for real-time updates
+   - Need to add for remaining features
+2. [ ] Implement testing
+3. [ ] Set up CI/CD
+4. [ ] Add loading states
+5. [ ] Optimize performance
+
+Design Elements:
+- Dark theme (#1a1a1a)
+- Feature cards with colored icon backgrounds
+- Stats cards with colored icons
+- User profile with blue avatar
+- Action buttons (gray and blue)
+- Consistent spacing and typography
+- Responsive grid layouts
+- Interactive animations and transitions
+- Beautiful tables with filters
+- Tabbed interfaces
+- Form elements with focus states
+- Loading spinners
+- Success/error notifications
+- Modal dialogs
+- Tooltips
+- Progress indicators
+- Charts and graphs
+- Activity feeds
+- Settings panels
+- Quick action buttons
+- Comment threads with nested replies
+- Share buttons with tooltips
+- Like buttons with animations
+
+Next steps:
+[X] Implement API endpoints for user management
+[X] Implement API endpoints for content management
+[X] Add real-time data fetching for analytics
+[X] Connect settings to backend
+[X] Add user roles and permissions
+[X] Implement image upload for logo/favicon
+[X] Add email template customization
+[X] Set up real-time notifications
+[X] Add data export functionality
+[X] Implement backup and restore
+
+All admin features have been successfully implemented! The admin interface is now fully functional with:
+- Complete user management system
+- Content management with filtering
+- Real-time analytics dashboard
+- Configurable settings
+- File upload capabilities
+- Email template customization
+- Real-time notifications
+- Data export and backup functionality
+
+Core Features Status:
+
+1. Authentication & User Management
+[X] User registration
+[X] User login
+[X] Protected routes
+[X] Password reset
+[X] User profiles
+[X] Admin interface
+
+2. Content Management
+[X] Post creation
+[X] Rich text editor
+[X] Post editing
+[X] Post deletion
+[X] Categories
+[X] Tags
+[X] Content moderation
+
+3. User Interface
+[X] Responsive design
+[X] Dark mode
+[X] Dashboard
+[X] Blog view
+[X] Explore page
+[X] Interactive animations
+[X] Admin interface
+
+4. Engagement Features
+[X] Like system (UI)
+[X] Comment system (UI)
+[X] Actual comment functionality
+[X] View counting
+[X] Share functionality
+
+5. Search & Discovery
+[X] Search functionality
+[X] Category filtering
+[X] Tag filtering
+[X] Featured posts
+[X] Recent posts
+
+Priority Tasks:
+1. [DONE] Implement post editing and deletion
+2. [DONE] Add actual comment functionality
+3. [DONE] Set up password reset system
+4. [DONE] Create admin interface
+5. [DONE] Add user roles and permissions
+
+Technical Debt:
+1. [IN PROGRESS] Add proper error handling
+2. [ ] Implement testing
+3. [ ] Set up CI/CD
+4. [ ] Add loading states
+5. [ ] Optimize performance
+
+Design Elements:
+- Dark theme (#1a1a1a)
+- Feature cards with colored icon backgrounds
+- Stats cards with colored icons
+- User profile with blue avatar
+- Action buttons (gray and blue)
+- Consistent spacing and typography
+- Responsive grid layouts
+- Interactive animations and transitions
+- Beautiful tables with filters
+- Tabbed interfaces
+- Form elements with focus states
+- Loading spinners
+- Success/error notifications
+- Modal dialogs
+- Tooltips
+- Progress indicators
+- Charts and graphs
+- Activity feeds
+- Settings panels
+- Quick action buttons

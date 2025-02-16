@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary: 255, 59, 48;
+    --secondary: 255, 149, 0;
+    --success: 50, 215, 75;
+    --error: 255, 45, 85;
+  }
+
+  /* Typography */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading text-gray-800 dark:text-gray-100;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-wide;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl lg:text-5xl font-bold tracking-wide;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl lg:text-4xl font-bold tracking-wide;
+  }
+
+  h4 {
+    @apply text-xl md:text-2xl lg:text-3xl font-bold tracking-wide;
+  }
+
+  p {
+    @apply text-base md:text-lg leading-relaxed text-gray-800 dark:text-gray-300;
+  }
+
+  code {
+    @apply font-mono text-sm bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-gray-800 dark:text-gray-200;
+  }
+}
+
+@layer components {
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium transition-colors duration-200;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-500 text-white hover:bg-primary-600 focus:ring-2 focus:ring-primary-500/20 disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply btn bg-secondary-500 text-white hover:bg-secondary-600 focus:ring-2 focus:ring-secondary-500/20 disabled:opacity-50;
+  }
+
+  .btn-success {
+    @apply btn bg-success-500 text-white hover:bg-success-600 focus:ring-2 focus:ring-success-500/20 disabled:opacity-50;
+  }
+
+  .btn-error {
+    @apply btn bg-error-500 text-white hover:bg-error-600 focus:ring-2 focus:ring-error-500/20 disabled:opacity-50;
+  }
+
+  .btn-outline {
+    @apply btn border-2 border-gray-200 dark:border-gray-700 text-gray-800 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:ring-2 focus:ring-gray-500/20;
+  }
+
+  /* Form Elements */
+  .input {
+    @apply w-full px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-800 dark:text-gray-100
+           placeholder-gray-500 dark:placeholder-gray-500
+           focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 dark:focus:border-primary-400 
+           transition-colors duration-200;
+  }
+
+  .select {
+    @apply input appearance-none bg-no-repeat bg-[right_0.75rem_center];
+  }
+
+  .label {
+    @apply block text-sm font-medium text-gray-800 dark:text-gray-300 mb-1;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200
+           border border-gray-100 dark:border-gray-700;
+  }
+
+  /* Transitions */
+  .fade-enter {
+    @apply opacity-0;
+  }
+
+  .fade-enter-active {
+    @apply opacity-100 transition-opacity duration-300;
+  }
+
+  .fade-exit {
+    @apply opacity-100;
+  }
+
+  .fade-exit-active {
+    @apply opacity-0 transition-opacity duration-300;
+  }
+}
+
+/* Markdown Editor Overrides */
+.w-md-editor {
+  @apply bg-white dark:bg-gray-800 !important;
+}
+
+.w-md-editor-text {
+  @apply font-mono !important;
+}
+
+.w-md-editor-toolbar {
+  @apply bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 !important;
+}
+
+.w-md-editor-toolbar button {
+  @apply text-gray-800 dark:text-gray-300 !important;
+}
+
+.w-md-editor-toolbar button:hover {
+  @apply text-gray-900 dark:text-white !important;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  @apply w-2;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-gray-100 dark:bg-gray-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-gray-300 dark:bg-gray-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-gray-400 dark:bg-gray-600;
+} 
