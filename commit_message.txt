@@ -1,3 +1,0 @@
-[Cursor] Remove .cursorrules file
-
-Removed unnecessary .cursorrules file from the repository 
