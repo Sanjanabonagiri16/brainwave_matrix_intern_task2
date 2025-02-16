@@ -1,4 +1,4 @@
-# Blogging Platform
+# NexaBlog
 
 A modern, feature-rich blogging platform built with Next.js, TypeScript, and Prisma.
 
@@ -72,9 +72,10 @@ Create a `.env` file with the following variables:
 ```env
 # App
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME="NexaBlog"
 
 # Database
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/blogapp?schema=public"
+DATABASE_URL="postgresql://postgres:postgres@localhost:5432/nexablog?schema=public"
 
 # Authentication
 NEXTAUTH_URL="http://localhost:3000"
@@ -85,7 +86,7 @@ SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="587"
 SMTP_USER="your-email@gmail.com"
 SMTP_PASS="your-app-password"
-SMTP_FROM="BlogApp <noreply@blogapp.com>"
+SMTP_FROM="NexaBlog <noreply@nexablog.com>"
 ```
 
 ## Project Structure
