@@ -7,7 +7,7 @@ import { ThemeProvider } from '@/contexts/ThemeContext'
 import PageTransition from '@/components/PageTransition'
 
 export const metadata: Metadata = {
-  title: 'BlogApp - Share Your Stories',
+  title: 'Brainwave Matrix Blog - Share Your Stories',
   description: 'Create, publish, and engage with a community of passionate writers and readers',
 }
 

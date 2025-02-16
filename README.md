@@ -1,6 +1,6 @@
-# Blogging Platform
+# Brainwave Matrix Blog
 
-A modern blogging platform built with Next.js, TypeScript, and Prisma.
+A modern, feature-rich blogging platform built with Next.js, TypeScript, and Prisma.
 
 ## Features
 
